@@ -1,0 +1,100 @@
+# SFG_AGENT 配置文件
+# 复制本文件为 config.yaml，填入真实值后启动
+# 支持 ${ENV_VAR} 语法引用环境变量
+
+# ─── Anthropic / Claude ───────────────────────────────────────────────────────
+anthropic:
+  api_key: "${ANTHROPIC_AUTH_TOKEN}"       # 必填：API key
+  base_url: "${ANTHROPIC_BASE_URL}"        # 必填：私有端点地址
+  model: "${ANTHROPIC_MODEL}"              # 模型名（从环境变量读取，如 claudecode_common）
+  max_tokens: 4096
+
+# ─── 飞书 ─────────────────────────────────────────────────────────────────────
+lark:
+  bot_open_id: "ou_REPLACE_WITH_BOT_OPEN_ID"        # 必填：Bot 的 open_id
+  lark_cli_path: ""                                  # 留空则自动从 PATH 找 lark-cli
+  # 若 lark-cli 不在 PATH，填完整路径，例如：
+  # lark_cli_path: "/home/user/nodejs/node22.15/bin/lark-cli"
+
+# ─── 权限白名单 ───────────────────────────────────────────────────────────────
+permissions:
+  whitelist:
+    - open_id: "ou_REPLACE_WITH_YOUR_OPEN_ID"
+      name: "管理员"
+      roles: ["admin"]
+    # - open_id: "ou_xxx"
+    #   name: "QA同学"
+    #   roles: ["operator"]
+    # - open_id: "ou_yyy"
+    #   name: "策划同学"
+    #   roles: ["viewer"]
+
+# 角色权限定义
+roles:
+  admin:
+    allowed_tools: ["*"]
+    thinking_default: "medium"
+  operator:
+    allowed_tools:
+      - "feishu_tools"
+      - "memory_tools"
+      - "game_tools.list_zones"
+      - "game_tools.search_gm_commands"
+      - "game_tools.send_gm_command"
+    denied_tools:
+      - "game_tools.copy_role"
+      - "game_tools.batch_send_gm_command"
+    thinking_default: "low"
+  viewer:
+    allowed_tools:
+      - "feishu_tools"
+      - "memory_tools"
+      - "game_tools.list_zones"
+    thinking_default: "low"
+
+# ─── 记忆 ─────────────────────────────────────────────────────────────────────
+memory:
+  enabled: true
+  vector_enabled: false          # Phase 3 功能，需安装 sentence-transformers
+  vector_model: "paraphrase-multilingual-MiniLM-L12-v2"
+  ttl_days: 90                   # 记忆保留天数
+
+# ─── Thinking Level ───────────────────────────────────────────────────────────
+thinking:
+  default_level: "low"           # low / medium / high
+  # low    = 无 extended thinking，响应最快
+  # medium = budget_tokens 5000
+  # high   = budget_tokens 16000
+
+# ─── 游戏服务器集成 ───────────────────────────────────────────────────────────
+game:
+  enabled: true
+  gm_server_config: "~/.claude/mcp-servers/gm_server/config.json"
+  audit_log: "~/sfg_agent/data/audit.log"   # GM 操作审计日志
+
+# ─── 工具 Provider（插件式，按需启用）────────────────────────────────────────
+# 新增工具只需：1. 创建 tools/xxx.py + PROVIDER_META  2. 在此处加一行  3. 重启
+tool_providers:
+  - module: tools.feishu_tools
+    enabled: true
+  - module: tools.game_tools
+    enabled: true          # bool 字段请直接填 true/false，勿用 ${ENV_VAR}
+  - module: tools.memory_tools
+    enabled: true
+  - module: tools.minion_tools
+    enabled: true
+  # 示例：未来新增飞书知识库工具
+  # - module: tools.wiki_tools
+  #   enabled: false
+
+# ─── Dream 夜间维护周期 ───────────────────────────────────────────────────────
+dream:
+  enabled: true
+  cron: "0 3 * * *"             # 每天凌晨 3 点，默认关闭可改为 false
+
+# ─── 日志 ─────────────────────────────────────────────────────────────────────
+logging:
+  level: "INFO"                  # DEBUG / INFO / WARNING / ERROR
+  file: "~/sfg_agent/data/agent.log"
+  max_bytes: 10485760            # 10 MB
+  backup_count: 3

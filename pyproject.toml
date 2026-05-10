@@ -1,0 +1,27 @@
+[project]
+name = "sfg-agent"
+version = "1.0.0"
+description = "飞书游戏服务器 AI 助手（多群联合学习版）"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "aiosqlite>=0.20.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "httpx>=0.27.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+vector = [
+    "sentence-transformers>=3.0",
+    "numpy>=1.24",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = []
