@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**飞书群原生 AI 游戏运营助手 · 越用越聪明**
+**TeamAgent AI 游戏运营助手 · 越用越聪明**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Claude](https://img.shields.io/badge/Claude-Adaptive_Thinking-blueviolet?logo=anthropic)](https://anthropic.com)
